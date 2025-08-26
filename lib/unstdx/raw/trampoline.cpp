@@ -1,4 +1,5 @@
 #include "unstdx/raw/trampoline.hpp"
+#include "unstdx/efirtti.hpp"
 #include "unefix.hpp"
 
 namespace uefi{
@@ -7,6 +8,12 @@ EFI_HANDLE ImageHandle = nullptr;
 EFI_SYSTEM_TABLE* SystemTable = nullptr;
 }
 }
+
+namespace __cxxabiv1{
+    __si_class_type_info::~__si_class_type_info(){}
+    __class_type_info::~__class_type_info(){}
+}
+
 
 extern "C"{
     typedef void (*ctor_t)();
@@ -24,6 +31,10 @@ void run_global_ctors(){
     for(ctor_t* ctor = __init_array_start; ctor != __init_array_end; ctor++){
         (*ctor)();
     }
+}
+
+extern "C" void __cxa_pure_virtual(){
+    while(true) __asm__("hlt");
 }
 
 void run_global_dtors(){

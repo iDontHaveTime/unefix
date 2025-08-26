@@ -1,12 +1,10 @@
+#include "unstdx/efistream.hpp"
 #include "unefix.hpp"
-#include "unstdx/raw/trampoline.hpp"
 
 EFI_STATUS EFIAPI main_efix(){
-    EFI_SYSTEM_TABLE* systable = uefi::raw::SystemTable;
+    uefi::raw::SystemTable->ConOut->ClearScreen(uefi::raw::SystemTable->ConOut);
 
-    systable->ConOut->ClearScreen(systable->ConOut);
-
-    systable->ConOut->OutputString(systable->ConOut, u"qemu and uefi booted and work!\r\n");
+    uefi::cout<<u"qemu and uefi booted and work!"<<u"\r\nline 2\r\n"<<uefi::flush;
 
     while(true) __asm__ volatile("hlt");
 
