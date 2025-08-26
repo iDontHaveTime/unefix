@@ -1,0 +1,11 @@
+# folders
+.zed/
+.vscode/
+.cache/
+build/
+
+# files
+*.o
+*.EFI
+*.fd
+*.sh
