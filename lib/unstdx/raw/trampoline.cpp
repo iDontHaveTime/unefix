@@ -28,7 +28,7 @@ void run_global_ctors(){
 
 void run_global_dtors(){
     if(__fini_array_start[0] == nullptr) return;
-    for(dtor_t* dtor = __fini_array_start; dtor != __fini_array_end; dtor++) {
+    for(dtor_t* dtor = __fini_array_start; dtor != __fini_array_end; dtor++){
         (*dtor)();
     }
 }
