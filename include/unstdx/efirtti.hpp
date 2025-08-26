@@ -3,7 +3,7 @@
 
 namespace __cxxabiv1{
     struct __class_type_info{
-        virtual ~__class_type_info();
+        virtual ~__class_type_info() noexcept;
         virtual const char* name() const noexcept{return "unknown";}
     };
     struct __si_class_type_info : __class_type_info{

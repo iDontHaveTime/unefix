@@ -6,9 +6,9 @@
 
 ## Features
 - Pure C++ freestanding library, no external dependencies (besides Clang + LLD).
-- Minimal headers: `unefix.hpp`, `untypes.hpp`, `uefi_stdint.h`, `uefi_stddef.h`.
-- Simple macros for defining UEFI entry points (`define_main`) and accessing system tables.
 - PE/COFF executable ready to boot in QEMU with OVMF.
+- Has minimal exceptions and rtti support
+- Fully supports virtual functions
 
 ---
 
@@ -48,7 +48,7 @@ qemu-system-x86_64 \
 ---
 
 ## Roadmap
-- Adding standard library-esque headers.
 - Finish the `EFI_SYSTEM_TABLE` struct.
 - Add filesystem support.
 - Expand into a full UEFI standard library for OS development.
+- Kernel Loader (ELF Kernel)

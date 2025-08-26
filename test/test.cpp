@@ -2,9 +2,9 @@
 #include "unefix.hpp"
 
 EFI_STATUS EFIAPI main_efix(){
-    uefi::raw::SystemTable->ConOut->ClearScreen(uefi::raw::SystemTable->ConOut);
+    uefi::clearScreen();
 
-    uefi::cout<<u"qemu and uefi booted and work!"<<u"\r\nline 2\r\n"<<uefi::flush;
+    uefi::cout<<u"qemu and uefi booted and work!"<<uefi::endl<<u"line 2"<<uefi::endl;
 
     while(true) __asm__ volatile("hlt");
 
