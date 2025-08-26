@@ -1,5 +1,7 @@
 #include "unefix.hpp"
 
+extern "C" void EFIAPI __unstdx_trampoline__(EFI_HANDLE img, EFI_SYSTEM_TABLE* systable);
+
 #define __uefi_start extern "C" __attribute__((noreturn, naked, visibility("default")))
 
 #if defined(__i386__)
@@ -15,7 +17,7 @@ __uefi_start void _start_i386(){
 __uefi_start void _start_x86_64(){
     __asm__ volatile(
         "andq $-16, %rsp\n"
-        "callq main_efix\n"
+        "callq __unstdx_trampoline__\n"
         "hlt\n"
     );
 }

@@ -5,7 +5,7 @@ OUTDIR = efi/EFI/BOOT
 
 LDFLAGS = /subsystem:efi_application /entry:_start
 
-OBJS := $(shell find build/CMakeFiles -name '*.o')
+OBJS := $(shell find build/CMakeFiles -type f -name '*.o')
 
 all: $(TARGET)
 

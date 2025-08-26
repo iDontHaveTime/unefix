@@ -77,11 +77,7 @@ struct EFI_SYSTEM_TABLE{
     void* ConfigurationTable; // TODO: implement EFI_CONFIGURATION_TABLE
 };
 
-// a little helper
-#define define_main(x, y) extern "C" EFI_STATUS EFIAPI main_efix(EFI_HANDLE x, void* y)
-define_main(ImageHandle, SystemTable);
-
-#define get_table(name, arg) EFI_SYSTEM_TABLE* name = (EFI_SYSTEM_TABLE*)arg
+extern EFI_STATUS EFIAPI main_efix();
 
 #define EFI_SUCCESS 0
 

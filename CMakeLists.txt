@@ -16,7 +16,7 @@ target_compile_options(unefix PRIVATE
     --target=x86_64-windows-gnu
     -Wall -Wextra
     -ffreestanding -nostdlib -nostdinc
-    -fno-exceptions -fno-rtti -fno-threadsafe-statics
+    -fno-exceptions -fno-threadsafe-statics
     -ffunction-sections -fdata-sections
     -mno-red-zone -mcmodel=kernel
     -fno-stack-protector -fno-stack-check -fshort-wchar
@@ -29,7 +29,7 @@ add_library(unefix_test_obj OBJECT test/test.cpp)
 target_compile_options(unefix_test_obj PRIVATE
     --target=x86_64-windows-gnu
     -fno-stack-protector -fno-stack-check -fshort-wchar -mno-red-zone
-    -ffreestanding -nostdlib -nostdinc -Wall -Wextra -fno-exceptions -fno-rtti
+    -ffreestanding -nostdlib -nostdinc -Wall -Wextra -fno-exceptions
 )
 
 target_include_directories(unefix_test_obj PUBLIC "include")
