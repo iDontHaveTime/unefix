@@ -5,6 +5,8 @@
 #include "defs/efitop.hpp"
 #include "defs/efiinp.hpp"
 #include "defs/efirs.hpp"
+#include "defs/eficonf.hpp"
+#include "defs/efiboot.hpp"
 #include "types/untypes.hpp"
 
 struct EFI_SYSTEM_TABLE{
@@ -25,11 +27,11 @@ struct EFI_SYSTEM_TABLE{
     EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL* StdErr;
 
     EFI_RUNTIME_SERVICES* RuntimeServices;
-    void* BootServices; // TODO: implement EFI_BOOT_SERVICES
+    EFI_BOOT_SERVICES* BootServices;
     
     UINTN NumberOfTableEntries;
 
-    void* ConfigurationTable; // TODO: implement EFI_CONFIGURATION_TABLE
+    EFI_CONFIGURATION_TABLE* ConfigurationTable;
 };
 
 extern EFI_STATUS EFIAPI main_efix();

@@ -8,6 +8,6 @@ EFI_STATUS EFIAPI main_efix(){
     uefi::cerr<<"ascii cerr "<<uefi::endl<<u"ustring cerr";
 
     
-    // uefi::raw::loop_on_exit = false;
-    return EFI_SUCCESS; // uefi::raw::loop_on_exit is true
+    uefi::raw::default_shutdown = uefi::system::ExitType::Loop;
+    return EFI_SUCCESS;
 }

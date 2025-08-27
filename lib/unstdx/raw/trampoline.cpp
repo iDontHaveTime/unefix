@@ -3,6 +3,7 @@
 #include "unstdx/efiexcept.hpp"
 #include "unstdx/efistream.hpp"
 #include "unefix.hpp"
+#include "unstdx/efisys.hpp"
 
 namespace std{
     [[noreturn]] void terminate() noexcept{
@@ -53,7 +54,7 @@ namespace raw{
 EFI_HANDLE ImageHandle = nullptr;
 EFI_SYSTEM_TABLE* SystemTable = nullptr;
 EFI_GRAPHICS_OUTPUT_PROTOCOL* gop = nullptr;
-BOOLEAN loop_on_exit = true;
+system::ExitType default_shutdown = system::ExitType::Shutdown;
 
 EFI_GUID gop_guid = {
     0x9042A9DE,
@@ -126,9 +127,7 @@ extern "C" EFI_STATUS EFIAPI __unstdx_trampoline__(EFI_HANDLE img, EFI_SYSTEM_TA
 
     run_global_dtors();
 
-    if(uefi::raw::loop_on_exit){
-        while(true) __asm__ volatile("hlt");
-    }
+    uefi::system::exit(0, uefi::raw::default_shutdown);
 
     return status;
 }

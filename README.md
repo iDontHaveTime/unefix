@@ -2,7 +2,7 @@
 
 ## A minimal, freestanding UEFI library in C++ for OS devs.
 
-`unefix` is a lightweight UEFI library that allows you to write UEFI applications and OS boot code without relying on GNU EFI or mingw. It works out-of-the-box with **Clang** + **LLD** (requirements), and only depends on CMake and Make for building.
+`unefix` is a lightweight and independent UEFI library that allows you to write UEFI applications and OS boot code without relying on GNU EFI or mingw. It works out-of-the-box with **Clang** + **LLD** (requirements), and only depends on CMake and Make for building.
 
 ## Features
 - Pure C++ freestanding library, no external dependencies (besides Clang + LLD).
@@ -48,7 +48,6 @@ qemu-system-x86_64 \
 ---
 
 ## Roadmap
-- Finish the `EFI_SYSTEM_TABLE` struct.
 - Add filesystem support.
 - Expand into a full UEFI standard library for OS development.
 - Kernel Loader (ELF Kernel)
