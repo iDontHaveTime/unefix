@@ -6,6 +6,7 @@ extern "C" void EFIAPI __unstdx_trampoline__(EFI_HANDLE img, EFI_SYSTEM_TABLE* s
 
 #if defined(__i386__)
 #define __uefi_arch "i386"
+#define __uefi_jump "jmp"
 
 __uefi_start void _start_i386(){
 
@@ -13,6 +14,7 @@ __uefi_start void _start_i386(){
 
 #elif defined(__x86_64__)
 #define __uefi_arch "x86_64"
+#define __uefi_jump "jmp"
 
 __uefi_start void _start_x86_64(){
     __asm__ volatile(
@@ -26,7 +28,7 @@ __uefi_start void _start_x86_64(){
 
 __uefi_start void _start(){
     __asm__ volatile(
-        "jmp _start_" __uefi_arch 
+        __uefi_jump " _start_" __uefi_arch 
         /* According to the C standard, in the lexing steps the lexer should merge strings */
     );
 }

@@ -50,4 +50,4 @@ qemu-system-x86_64 \
 ## Roadmap
 - Add filesystem support.
 - Expand into a full UEFI standard library for OS development.
-- Kernel Loader (ELF Kernel)
+- Kernel Loader (ELF Loader)

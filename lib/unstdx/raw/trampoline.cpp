@@ -12,11 +12,11 @@ namespace std{
 }
 
 extern "C" void __gxx_personality_seh0(){ 
-    while(true) __asm__("hlt"); 
+    std::terminate();
 }
 
 extern "C" void __cxa_begin_catch(){ 
-    while(true) __asm__("hlt"); 
+    std::terminate();
 }
 
 extern "C" void __cxa_end_catch(){};
@@ -39,12 +39,34 @@ extern "C" void __cxa_free_exception(void* ptr) noexcept{
     (void)ptr;
 }
 
+extern "C"{
+    struct __cxa_exception{
+        void* reserved1;
+        void* reserved2;
+        void* reserved3;
+        void* reserved4;
+        void* reserved5;
+        void* thrown_object;
+    };
+}
+
+const char* __trampoline_exc_msg__ = nullptr;
+
 extern "C" [[noreturn]] void __cxa_throw(void* thrown_exception, void* tinfo, void (*dest)(void*)){
     (void)thrown_exception;
     (void)tinfo;
     (void)dest;
 
-    uefi::cerr<<u"Exception thrown!\r\n";
+    uefi::cout.flush();
+
+    uefi::cerr<<"exception thrown";
+
+    if(__trampoline_exc_msg__){
+        uefi::cerr<<": "<<__trampoline_exc_msg__;
+        __trampoline_exc_msg__ = nullptr;
+    }
+
+    uefi::cerr<<uefi::endl;
 
     std::terminate();
 }
@@ -75,7 +97,7 @@ extern "C" size_t strlen(const char* _str) noexcept{
 namespace uefi{
     [[noreturn]] void terminate() noexcept{
         cout.flush();
-        while(true) __asm__ volatile("hlt");
+        system::exit(0, system::ExitType::Loop);
     }
 }
 
@@ -104,7 +126,7 @@ void run_global_ctors() noexcept{
 }
 
 extern "C" void __cxa_pure_virtual(){
-    while(true) __asm__("hlt");
+    std::terminate();
 }
 
 void run_global_dtors() noexcept{
@@ -114,10 +136,18 @@ void run_global_dtors() noexcept{
     }
 }
 
+inline void init_basics() noexcept{
+    uefi::raw::SystemTable->BootServices->LocateProtocol(
+        &uefi::raw::gop_guid,
+        nullptr,
+        (void**)&uefi::raw::gop
+    );
+}
 
 extern "C" EFI_STATUS EFIAPI __unstdx_trampoline__(EFI_HANDLE img, EFI_SYSTEM_TABLE* systable){
     uefi::raw::SystemTable = systable;
     uefi::raw::ImageHandle = img;
+    init_basics();
 
     run_global_ctors();
 
@@ -127,7 +157,7 @@ extern "C" EFI_STATUS EFIAPI __unstdx_trampoline__(EFI_HANDLE img, EFI_SYSTEM_TA
 
     run_global_dtors();
 
-    uefi::system::exit(0, uefi::raw::default_shutdown);
+    uefi::system::exit(status, uefi::raw::default_shutdown);
 
     return status;
 }

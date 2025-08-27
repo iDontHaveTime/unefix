@@ -37,5 +37,6 @@ struct EFI_SYSTEM_TABLE{
 extern EFI_STATUS EFIAPI main_efix();
 
 #define EFI_SUCCESS 0
+#define EFI_NOT_FOUND 14
 
 #endif // UNEFIX_HPP
