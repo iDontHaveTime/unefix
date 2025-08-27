@@ -1,6 +1,7 @@
 #ifndef TRAMPOLINE_HPP
 #define TRAMPOLINE_HPP
 
+#include "types/untypes.hpp"
 #include "unefix.hpp"
 #include "defs/efigrph.hpp"
 
@@ -13,6 +14,7 @@ extern EFI_HANDLE ImageHandle;
 extern EFI_SYSTEM_TABLE* SystemTable;
 extern EFI_GRAPHICS_OUTPUT_PROTOCOL* gop;
 extern EFI_GUID gop_guid;
+extern BOOLEAN loop_on_exit;
 
 }
 }

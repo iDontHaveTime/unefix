@@ -53,6 +53,7 @@ namespace raw{
 EFI_HANDLE ImageHandle = nullptr;
 EFI_SYSTEM_TABLE* SystemTable = nullptr;
 EFI_GRAPHICS_OUTPUT_PROTOCOL* gop = nullptr;
+BOOLEAN loop_on_exit = true;
 
 EFI_GUID gop_guid = {
     0x9042A9DE,
@@ -62,6 +63,12 @@ EFI_GUID gop_guid = {
 };
 
 }
+}
+
+extern "C" size_t strlen(const char* _str) noexcept{
+    size_t len = 0;
+    while(*_str++) len++;
+    return len;
 }
 
 namespace uefi{
@@ -115,7 +122,13 @@ extern "C" EFI_STATUS EFIAPI __unstdx_trampoline__(EFI_HANDLE img, EFI_SYSTEM_TA
 
     EFI_STATUS status = main_efix();
 
+    uefi::cout.flush();
+
     run_global_dtors();
+
+    if(uefi::raw::loop_on_exit){
+        while(true) __asm__ volatile("hlt");
+    }
 
     return status;
 }
