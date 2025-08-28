@@ -28,7 +28,11 @@ typedef __PTRDIFF_TYPE__ ptrdiff_t;
 typedef __WCHAR_TYPE__ wchar_t;
 #endif
 
+#ifdef __cplusplus
+#define NULL nullptr
+#else
 #define NULL ((void*)0)
+#endif
 
 #if defined(__SIZEOF_INT128__)
     #define __INT128_DEFINED__

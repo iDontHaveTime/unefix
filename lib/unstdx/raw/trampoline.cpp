@@ -41,17 +41,6 @@ extern "C" void __cxa_free_exception(void* ptr) noexcept{
     (void)ptr;
 }
 
-extern "C"{
-    struct __cxa_exception{
-        void* reserved1;
-        void* reserved2;
-        void* reserved3;
-        void* reserved4;
-        void* reserved5;
-        void* thrown_object;
-    };
-}
-
 const char* __trampoline_exc_msg__ = nullptr;
 
 extern "C" [[noreturn]] void __cxa_throw(void* thrown_exception, void* tinfo, void (*dest)(void*)){

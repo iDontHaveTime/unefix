@@ -6,7 +6,7 @@
 
 namespace uefi{
     namespace defaults{
-        constexpr size_t cout_buffsize = 2048;
+        constexpr size_t cout_buffsize = 1024;
         constexpr size_t cerr_temp_buffsize = 16;
     }
     class __uefi_fflush__{};
