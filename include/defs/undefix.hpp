@@ -61,4 +61,6 @@
 #define EFI_MEDIA_CHANGED 13
 #define EFI_NOT_FOUND 14
 
+#include "defs/efimacr.hpp"
+
 #endif // UNDEFIX_HPP

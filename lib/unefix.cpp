@@ -1,6 +1,6 @@
 #include "unefix.hpp"
 
-extern "C" void EFIAPI __unstdx_trampoline__(EFI_HANDLE img, EFI_SYSTEM_TABLE* systable);
+extern "C" [[noreturn]] void EFIAPI __unstdx_trampoline__(EFI_HANDLE img, EFI_SYSTEM_TABLE* systable);
 
 #define __uefi_start extern "C" __attribute__((noreturn, naked, visibility("default")))
 

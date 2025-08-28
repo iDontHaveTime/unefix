@@ -1,4 +1,6 @@
 #include "unstdx/raw/trampoline.hpp"
+#include "defs/efiboot.hpp"
+#include "defs/efifs.hpp"
 #include "defs/efigrph.hpp"
 #include "types/untypes.hpp"
 #include "unstdx/efirtti.hpp"
@@ -66,8 +68,13 @@ namespace uefi{
 namespace raw{
 EFI_HANDLE ImageHandle = nullptr;
 EFI_SYSTEM_TABLE* SystemTable = nullptr;
+
 EFI_GRAPHICS_OUTPUT_PROTOCOL* gop = nullptr;
+
 system::ExitType default_shutdown = system::ExitType::Shutdown;
+
+EFI_HANDLE* fsHandles = nullptr;
+UINTN fsHandleCount = 0;
 
 }
 }
@@ -76,6 +83,13 @@ extern "C" size_t strlen(const char* _str) noexcept{
     size_t len = 0;
     while(*_str++) len++;
     return len;
+}
+extern "C" void* memset(void* _dest, int c, size_t n) noexcept{
+    char* cdst = (char*)_dest; 
+    while(n--){
+        *cdst++ = (char)c;
+    }
+    return _dest;
 }
 
 namespace uefi{
@@ -109,6 +123,10 @@ void run_global_ctors() noexcept{
     }
 }
 
+extern "C" void _Unwind_Resume() noexcept{
+    std::terminate();
+}
+
 extern "C" void __cxa_pure_virtual(){
     std::terminate();
 }
@@ -127,11 +145,20 @@ inline void init_basics() noexcept{
         nullptr,
         (void**)&uefi::raw::gop
     );
+    guid = EFI_SIMPLE_FILE_SYSTEM_PROTOCOL_GUID;
+    uefi::raw::SystemTable->BootServices->LocateHandleBuffer(
+        EFI_LOCATE_SEARCH_TYPE::ByProtocol,
+        &guid,
+        nullptr,
+        &uefi::raw::fsHandleCount,
+        &uefi::raw::fsHandles
+    );
 }
 
-extern "C" EFI_STATUS EFIAPI __unstdx_trampoline__(EFI_HANDLE img, EFI_SYSTEM_TABLE* systable){
+extern "C" [[noreturn]] EFI_STATUS EFIAPI __unstdx_trampoline__(EFI_HANDLE img, EFI_SYSTEM_TABLE* systable){
     uefi::raw::SystemTable = systable;
     uefi::raw::ImageHandle = img;
+    
     init_basics();
 
     run_global_ctors();
@@ -143,6 +170,4 @@ extern "C" EFI_STATUS EFIAPI __unstdx_trampoline__(EFI_HANDLE img, EFI_SYSTEM_TA
     run_global_dtors();
 
     uefi::system::exit(status, uefi::raw::default_shutdown);
-
-    return status;
 }

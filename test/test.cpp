@@ -1,4 +1,5 @@
 #include "unstdx/efigfx.hpp"
+#include "unstdx/efimem.hpp"
 #include "unstdx/efistream.hpp"
 #include "unefix.hpp"
 
@@ -25,8 +26,21 @@ EFI_STATUS EFIAPI main_efix(){
 
     uefi::gfx::ScreenInfo screen;
 
+    char* ptr = (char*)uefi::alloc(24);
+
+    if(!ptr){
+        uefi::cout<<"ptr is null. reason: "<<uefi::mem_error<<uefi::endl;
+    }
+
+    ptr[23] = '\0';
+
+    uefi::cout<<ptr<<uefi::endl;
+
+    uefi::free(ptr);
+
     // screen.clear(screen.color(100, 100, 100));
     
     uefi::raw::default_shutdown = uefi::system::ExitType::Loop;
+    uefi::cout<<"main exit"<<uefi::endl;
     return EFI_SUCCESS; // after main, cout flushes automatically
 }

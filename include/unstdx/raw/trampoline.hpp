@@ -6,7 +6,7 @@
 #include "defs/efigrph.hpp"
 #include "unstdx/efisys.hpp"
 
-extern "C" EFI_STATUS EFIAPI __unstdx_trampoline__(EFI_HANDLE img, EFI_SYSTEM_TABLE* systable); 
+extern "C" [[noreturn]] EFI_STATUS EFIAPI __unstdx_trampoline__(EFI_HANDLE img, EFI_SYSTEM_TABLE* systable); 
 
 namespace uefi{
 namespace raw{
@@ -15,6 +15,8 @@ extern EFI_HANDLE ImageHandle;
 extern EFI_SYSTEM_TABLE* SystemTable;
 extern EFI_GRAPHICS_OUTPUT_PROTOCOL* gop;
 extern system::ExitType default_shutdown;
+extern EFI_HANDLE* fsHandles;
+extern UINTN fsHandleCount;
 
 }
 }

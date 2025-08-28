@@ -82,6 +82,10 @@ public:
         _init();
     }
 
+    void restart() noexcept{
+        _init();
+    }
+
     UINT32 color(UINT8 r, UINT8 g, UINT8 b) noexcept{
         return GetColor(r, g, b, format);
     }
@@ -93,6 +97,7 @@ public:
     }
 
     void clear(UINT32 color) noexcept{
+        if(!framebuffer) return;
         for(UINT32 y = 0; y < height; y++){
             for(UINT32 x = 0; x < width; x++){
                 framebuffer[y * pitch + x] = color;

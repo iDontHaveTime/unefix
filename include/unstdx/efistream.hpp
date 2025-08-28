@@ -1,6 +1,7 @@
 #ifndef EFISTREAM_HPP
 #define EFISTREAM_HPP
 
+#include "unstdx/efistr.hpp"
 #include "unstdx/raw/trampoline.hpp"
 #include "unefix.hpp"
 
@@ -33,7 +34,11 @@ namespace uefi{
             return;
         }
         ueficerr& EFIAPI operator<<(const char* str) noexcept override{
-            size_t len = __builtin_strlen(str);
+            if(!str){
+                write("(null)", sizeof("(null)")-1);
+                return *this;
+            }
+            size_t len = str::strlen(str);
             write(str, len);
             return *this;
         }
@@ -44,6 +49,10 @@ namespace uefi{
         }
 
         ueficerr& EFIAPI operator<<(const CHAR16* str) noexcept override{
+            if(!str){
+                write("(null)", sizeof("(null)")-1);
+                return *this;
+            }
             size_t len = 0;
             while(str[len]) len++;
             write(str, len);
@@ -119,7 +128,7 @@ namespace uefi{
         }
 
         ueficout& EFIAPI operator<<(const char* str) noexcept override{
-            size_t len = __builtin_strlen(str);
+            size_t len = str::strlen(str);
             write(str, len);
             return *this;
         }
