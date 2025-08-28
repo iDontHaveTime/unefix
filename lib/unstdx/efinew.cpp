@@ -1,17 +1,22 @@
 #include "unstdx/efinew.hpp"
+#include "unstdx/efimem.hpp"
 
-void operator delete(void*) noexcept{
-    return;
+void operator delete(void* ptr) noexcept{
+    uefi::free(ptr);
 }
 
 void* operator new(size_t size){
-    return (void*)(size - size);
+    void* ptr = uefi::alloc(size);
+
+    return ptr;
 }
 
 void* operator new[](size_t size){
-    return operator new(size);
+    void* ptr = uefi::alloc(size);
+
+    return ptr;
 }
 
 void operator delete[](void* ptr) noexcept{
-    operator delete(ptr);
+    uefi::free(ptr);
 }

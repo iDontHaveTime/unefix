@@ -1,10 +1,29 @@
+#include "unstdx/efifile.hpp"
 #include "unstdx/efigfx.hpp"
 #include "unstdx/efimem.hpp"
 #include "unstdx/efistream.hpp"
 #include "unefix.hpp"
 
-void print_ascii(uefi::uefistream& us, const char* str){
+void print_ascii(uefi::uefistream& us, const char* str) noexcept{
     us<<str;
+}
+
+size_t read_file(const uefi::fs::path& name) noexcept{
+    uefi::cerr<<name.data()<<uefi::endl;
+    return 0;
+    uefi::fs::volume vol(uefi::raw::fsHandles[0]);
+
+    uefi::fs::file f = vol.open_file(name, EFI_FILE_MODE_READ);
+
+    char buff[17];
+    size_t to_read = 16;
+    f.read(buff, &to_read);
+
+    buff[to_read] = '\0';
+
+    uefi::cout<<buff<<uefi::endl;
+
+    return to_read;
 }
 
 EFI_STATUS EFIAPI main_efix(){
@@ -26,6 +45,10 @@ EFI_STATUS EFIAPI main_efix(){
 
     uefi::gfx::ScreenInfo screen;
 
+    uefi::cout<<42<<" 0x"<<(void*)0x1F1471
+    <<" 0x"<<uefi::leadz(true)<<(void*)0x1F1471
+    <<' '<<-42<<uefi::endl<<uefi::leadz(false);
+
     char* ptr = (char*)uefi::alloc(24);
 
     if(!ptr){
@@ -35,8 +58,13 @@ EFI_STATUS EFIAPI main_efix(){
     ptr[23] = '\0';
 
     uefi::cout<<ptr<<uefi::endl;
-
+    
     uefi::free(ptr);
+    
+    uefi::cout.flush();
+
+    uefi::fs::path newpath = "toread.txt";
+    read_file(newpath);
 
     // screen.clear(screen.color(100, 100, 100));
     

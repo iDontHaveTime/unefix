@@ -4,9 +4,59 @@
 #include "defs/efifs.hpp"
 #include "defs/undefix.hpp"
 #include "types/untypes.hpp"
+#include "unstdx/efistream.hpp"
 
 namespace uefi{
+    namespace defaults{
+        constexpr size_t max_path_size = 256;
+    }
 namespace fs{
+
+    class path{
+        size_t where = 0;
+        char buff[defaults::max_path_size];
+    public:
+        path() noexcept = default;
+        path(const char* _path) noexcept{
+            set_path(_path);
+        }
+
+        void set_path(const char* p) noexcept{
+            where = 0;
+            size_t len = uefi::str::strlen(p);
+            if(len >= sizeof(buff)) len = sizeof(buff) - 1;
+
+            for(size_t i = 0; i < len; i++){
+                buff[i] = p[i];
+            }
+
+            buff[len] = '\0';
+            where = len;
+        }
+
+        const char* data() const noexcept{
+            return buff;
+        }
+
+        size_t size() const noexcept{
+            return where;
+        }
+
+        void to_char16(CHAR16* out, size_t max) const noexcept{
+            size_t i = 0;
+            for(; i < where && i < max-1; i++){
+                char c = buff[i];
+                out[i] = (c == '/') ? u'\\' : (CHAR16)c;
+            }
+            out[i] = 0;
+        }
+
+        friend uefi::uefistream& operator<<(uefi::uefistream& us, const path& p) noexcept{
+            if(!p.where) return us;
+            us<<p.data();
+            return us;
+        }
+    };
 
     class file{
         EFI_FILE_HANDLE handle;
@@ -75,7 +125,13 @@ namespace fs{
             close();
         }
 
-        file open_file(const CHAR16* path, UINT64 mode) noexcept{
+        file open_file(const path& path, UINT64 mode) const noexcept{
+            CHAR16 buff[defaults::max_path_size];
+            path.to_char16(buff, defaults::max_path_size);
+            return open_file(buff, mode);
+        }
+
+        file open_file(const CHAR16* path, UINT64 mode) const noexcept{
             EFI_FILE_HANDLE f = nullptr;
             if(root && EFI_SUCCESS == root->Open(root, &f, (CHAR16*)path, mode, 0)){
                 return file(f);

@@ -12,16 +12,95 @@ namespace uefi{
     }
     class __uefi_fflush__{};
     class __uefi_endl__{};
+    
+    struct leadz{
+        bool leading;
+        leadz(bool _to_lead) noexcept : leading(_to_lead){};
+    };
 
     class uefistream{
+        bool leadzero = false;
     public:
         virtual EFIAPI ~uefistream() noexcept = default;
         virtual EFIAPI void flush() = 0;
-        virtual EFIAPI uefistream& operator<<(const char* str) = 0;
-        virtual EFIAPI uefistream& operator<<(char c) = 0;
-        virtual EFIAPI uefistream& operator<<(const CHAR16* str) = 0;
-        virtual EFIAPI uefistream& operator<<(const __uefi_fflush__&) = 0;
-        virtual EFIAPI uefistream& operator<<(const __uefi_endl__&) = 0;
+
+        EFIAPI uefistream& operator<<(const char* str){
+            write(str, str::strlen(str));
+            return *this;
+        }
+
+        EFIAPI uefistream& operator<<(char c){
+            write(c);
+            return *this;
+        }
+
+        EFIAPI uefistream& operator<<(const CHAR16* str){
+            size_t len = 0;
+            while(str[len]) len++;
+            write(str, len);
+            return *this;
+        }
+
+        EFIAPI uefistream& operator<<(const __uefi_fflush__&){
+            flush();
+            return *this;
+        }
+
+        EFIAPI uefistream& operator<<(const __uefi_endl__&){
+            write(u"\r\n", 2);
+            flush();
+            return *this;
+        }
+
+        EFIAPI uefistream& operator<<(const leadz& lz){
+            leadzero = lz.leading;
+            return *this;
+        }
+
+        EFIAPI uefistream& operator<<(int n){
+            bool sign = (n < 0);
+            if(sign){
+                write('-');
+                n = -n;
+            }
+
+            int f = 0;
+            while(n){
+                int d = n % 10;
+                f = f * 10 + d;
+                n /= 10;
+            }
+
+            while(f){
+                write((f % 10) + '0');
+                f /= 10;
+            }
+            return *this;
+        }
+
+        EFIAPI uefistream& operator<<(void* ptr){
+            uintptr_t val = (uintptr_t)ptr;
+            bool started = leadzero;
+
+            for(int i = sizeof(void*)*2-1; i >= 0; i--){
+                uintptr_t digit = (val >> (i*4)) & 0xF;
+                if(digit != 0 || started){
+                    started = true;
+                    if(digit < 10){
+                        write('0' + digit);
+                    }
+                    else{
+                        write('A' + (digit - 10));
+                    }
+                }
+            }
+
+            if(!started && leadzero == false){
+                write('0');
+            }
+
+            return *this;
+        }
 
         virtual EFIAPI void write(char c) = 0;
         virtual EFIAPI void write(const CHAR16* str, size_t l) = 0;
@@ -32,42 +111,6 @@ namespace uefi{
     public:
         void EFIAPI flush() noexcept override{
             return;
-        }
-        ueficerr& EFIAPI operator<<(const char* str) noexcept override{
-            if(!str){
-                write("(null)", sizeof("(null)")-1);
-                return *this;
-            }
-            size_t len = str::strlen(str);
-            write(str, len);
-            return *this;
-        }
-
-        ueficerr& EFIAPI operator<<(char c) noexcept override{
-            write(c);
-            return *this;
-        }
-
-        ueficerr& EFIAPI operator<<(const CHAR16* str) noexcept override{
-            if(!str){
-                write("(null)", sizeof("(null)")-1);
-                return *this;
-            }
-            size_t len = 0;
-            while(str[len]) len++;
-            write(str, len);
-            return *this;
-        }
-
-        ueficerr& EFIAPI operator<<(const __uefi_fflush__&) noexcept override{
-            flush();
-            return *this;
-        }
-
-        ueficerr& EFIAPI operator<<(const __uefi_endl__&) noexcept override{
-            write(u"\r\n", 2);
-            flush();
-            return *this;
         }
 
         EFIAPI void write(char c) noexcept override{
@@ -125,31 +168,6 @@ namespace uefi{
             this->buff[this->index] = '\0';
             raw::SystemTable->ConOut->OutputString(raw::SystemTable->ConOut, this->buff);
             this->index = 0;
-        }
-
-        ueficout& EFIAPI operator<<(const char* str) noexcept override{
-            size_t len = str::strlen(str);
-            write(str, len);
-            return *this;
-        }
-        ueficout& EFIAPI operator<<(char c) noexcept override{
-            write(c);
-            return *this;
-        }
-        ueficout& EFIAPI operator<<(const CHAR16* str) noexcept override{
-            size_t len = 0;
-            while(str[len]) len++;
-            write(str, len);
-            return *this;
-        }
-        ueficout& EFIAPI operator<<(const __uefi_fflush__&) noexcept override{
-            flush();
-            return *this;
-        }
-        ueficout& EFIAPI operator<<(const __uefi_endl__&) noexcept override{
-            write(u"\r\n", 2);
-            flush();
-            return *this;
         }
         
         EFIAPI void write(char c) noexcept override{
