@@ -14,7 +14,6 @@ namespace raw{
 extern EFI_HANDLE ImageHandle;
 extern EFI_SYSTEM_TABLE* SystemTable;
 extern EFI_GRAPHICS_OUTPUT_PROTOCOL* gop;
-extern EFI_GUID gop_guid;
 extern system::ExitType default_shutdown;
 
 }

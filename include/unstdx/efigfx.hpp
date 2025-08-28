@@ -16,16 +16,16 @@ class ScreenInfo{
     void _init() noexcept{
         width = raw::gop->Mode->Info->HorizontalResolution;
         height = raw::gop->Mode->Info->VerticalResolution;
-        pitch = raw::gop->Mode->Info->PixelPerScanLine;
+        pitch = raw::gop->Mode->Info->PixelsPerScanLine;
 
         switch(raw::gop->Mode->Info->PixelFormat){
-            case PixelRedGreenBlueReserved8BitPerColor: 
+            case EFI_GRAPHICS_PIXEL_FORMAT::PixelRedGreenBlueReserved8BitPerColor: 
                 format = PixelFormat::RGB; 
                 break;
-            case PixelBlueGreenRedReserved8BitPerColor: 
+            case EFI_GRAPHICS_PIXEL_FORMAT::PixelBlueGreenRedReserved8BitPerColor: 
                 format = PixelFormat::BGR; 
                 break;
-            case PixelBitMask: 
+            case EFI_GRAPHICS_PIXEL_FORMAT::PixelBitMask: 
                 format = PixelFormat::BITMASK; 
                 break;
             default: 

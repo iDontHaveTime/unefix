@@ -1,9 +1,11 @@
 #include "unstdx/raw/trampoline.hpp"
+#include "defs/efigrph.hpp"
+#include "types/untypes.hpp"
 #include "unstdx/efirtti.hpp"
 #include "unstdx/efiexcept.hpp"
 #include "unstdx/efistream.hpp"
-#include "unefix.hpp"
 #include "unstdx/efisys.hpp"
+#include "unefix.hpp"
 
 namespace std{
     [[noreturn]] void terminate() noexcept{
@@ -78,13 +80,6 @@ EFI_SYSTEM_TABLE* SystemTable = nullptr;
 EFI_GRAPHICS_OUTPUT_PROTOCOL* gop = nullptr;
 system::ExitType default_shutdown = system::ExitType::Shutdown;
 
-EFI_GUID gop_guid = {
-    0x9042A9DE,
-    0x23DC,
-    0x4A38,
-    {0x96, 0xFB, 0x7A, 0xD4, 0xDF, 0x1B, 0xEA, 0x4F}
-};
-
 }
 }
 
@@ -137,8 +132,9 @@ void run_global_dtors() noexcept{
 }
 
 inline void init_basics() noexcept{
+    EFI_GUID guid = EFI_GRAPHICS_OUTPUT_PROTOCOL_GUID;
     uefi::raw::SystemTable->BootServices->LocateProtocol(
-        &uefi::raw::gop_guid,
+        &guid,
         nullptr,
         (void**)&uefi::raw::gop
     );

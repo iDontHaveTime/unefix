@@ -6,6 +6,7 @@ void print_ascii(uefi::uefistream& us, const char* str){
 }
 
 EFI_STATUS EFIAPI main_efix(){
+    if(!uefi::raw::SystemTable) throw "";
     uefi::clearScreen();
 
     
