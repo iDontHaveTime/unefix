@@ -42,8 +42,9 @@ qemu-system-x86_64 \
     -m 512M
 ```
 
-## Example
-- The example can be found in `test/test.cpp`.
+## Documentation
+
+You can find the documentation in the `docs` folder.
 
 ---
 
