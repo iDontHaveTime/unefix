@@ -33,16 +33,21 @@
 #define CONST const
 
 #ifdef _MSC_VER
-
-#define EFIAPI __stdcall
-
+    #if defined(_M_IX86)
+        #define EFIAPI __stdcall
+    #else
+        #define EFIAPI
+    #endif
 #else
-#if __SIZEOF_POINTER__ != 8
-#define EFIAPI __attribute__((stdcall))
-#else
-#define EFIAPI __attribute__((ms_abi))
-#endif 
-
+    #if defined(__i386__) || defined(__x86_64__)
+        #if __SIZEOF_POINTER__ != 8
+            #define EFIAPI __attribute__((stdcall))
+        #else
+            #define EFIAPI __attribute__((ms_abi))
+        #endif 
+    #else
+        #define EFIAPI
+    #endif
 #endif
 
 #define EFI_SUCCESS 0
