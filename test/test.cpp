@@ -1,7 +1,7 @@
-#include "unstdx/efifile.hpp"
 #include "unstdx/efigfx.hpp"
 #include "unstdx/efimem.hpp"
 #include "unstdx/efistream.hpp"
+#include "unstdx/efifile.hpp"
 #include "unefix.hpp"
 
 void print_ascii(uefi::uefistream& us, const char* str) noexcept{
@@ -9,11 +9,19 @@ void print_ascii(uefi::uefistream& us, const char* str) noexcept{
 }
 
 size_t read_file(const uefi::fs::path& name) noexcept{
-    uefi::cerr<<name.data()<<uefi::endl;
-    return 0;
     uefi::fs::volume vol(uefi::raw::fsHandles[0]);
 
+    if(vol.valid()){
+        uefi::cerr<<"Volume opened"<<uefi::endl;
+    }
+    else{
+        uefi::cerr<<"Volume is not valid"<<uefi::endl;
+    }
+
     uefi::fs::file f = vol.open_file(name, EFI_FILE_MODE_READ);
+    if(f){
+        uefi::cerr<<"File opened"<<uefi::endl;
+    }
 
     char buff[17];
     size_t to_read = 16;

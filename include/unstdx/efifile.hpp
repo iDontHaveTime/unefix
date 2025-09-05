@@ -64,6 +64,13 @@ namespace fs{
         file() noexcept : handle(nullptr){};
         file(EFI_FILE_HANDLE h) noexcept : handle(h){};
 
+        EFI_FILE_HANDLE raw_handle(void) const noexcept{
+            return handle;
+        }
+
+        file(const file&) = delete;
+        file& operator=(const file&) = delete;
+
         bool valid() const noexcept{
             return handle != nullptr;
         }
@@ -104,12 +111,48 @@ namespace fs{
         EFI_HANDLE fsHandle;
     public:
 
-        static volume from_handle(EFI_HANDLE handle) noexcept;
+        EFI_FILE_HANDLE raw_root() const noexcept{
+            return root;
+        }
+
+        EFI_HANDLE raw_fsh() const noexcept{
+            return fsHandle;
+        }
+
+        bool open(EFI_HANDLE handle) noexcept{
+            close();
+            fsHandle = handle;
+
+            EFI_SIMPLE_FILE_SYSTEM_PROTOCOL* fsProtocol = nullptr;
+            EFI_GUID guid = EFI_SIMPLE_FILE_SYSTEM_PROTOCOL_GUID;
+            EFI_STATUS status = uefi::raw::SystemTable->BootServices->HandleProtocol(
+                handle,
+                &guid,
+                (void**)&fsProtocol
+            );
+
+            if(status != EFI_SUCCESS || !fsProtocol){
+                return true;
+            }
+
+            status = fsProtocol->OpenVolume(fsProtocol, &root);
+            if(status != EFI_SUCCESS){
+                root = nullptr;
+            }
+
+            return false;
+        }
 
         volume() noexcept : root(nullptr), fsHandle(nullptr){};
         volume(EFI_HANDLE handle) noexcept{
-            *this = from_handle(handle);
+            root = nullptr;
+            fsHandle = nullptr;
+
+            open(handle);
         }
+
+        volume(const volume&) = delete;
+        volume& operator=(const volume&) = delete;
 
         bool valid() const noexcept{
             return (root && fsHandle);
@@ -119,21 +162,27 @@ namespace fs{
             return valid();
         }
 
-        void close() noexcept;
+        void close() noexcept{
+            if(root){
+                root->Close(root);
+            }
+            root = nullptr;
+            fsHandle = nullptr;
+        }
 
         ~volume() noexcept{
             close();
         }
 
         file open_file(const path& path, UINT64 mode) const noexcept{
-            CHAR16 buff[defaults::max_path_size];
+            alignas(16) CHAR16 buff[defaults::max_path_size];
             path.to_char16(buff, defaults::max_path_size);
             return open_file(buff, mode);
         }
 
-        file open_file(const CHAR16* path, UINT64 mode) const noexcept{
+        file open_file(CHAR16* path, UINT64 mode) const noexcept{
             EFI_FILE_HANDLE f = nullptr;
-            if(root && EFI_SUCCESS == root->Open(root, &f, (CHAR16*)path, mode, 0)){
+            if(root && EFI_SUCCESS == root->Open(root, &f, path, mode, 0)){
                 return file(f);
             }
             return file{};
