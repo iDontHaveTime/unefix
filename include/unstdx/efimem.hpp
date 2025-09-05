@@ -6,7 +6,7 @@
 namespace uefi{
     extern const char* mem_error;
 
-    void* alloc(UINTN bytes) noexcept;
+    void* alloc(UINTN bytes, unsigned int alignment = alignof(long double)) noexcept;
     void free(void* ptr) noexcept;
 }
 

@@ -5,11 +5,14 @@
 namespace uefi{
 const char* mem_error = nullptr;
 
-void* alloc(UINTN bytes) noexcept{
+void* alloc(UINTN bytes, unsigned int alignment) noexcept{
     void* ptr = nullptr;
+
+    UINTN total = bytes + alignment - 1 + sizeof(void*);
+
     EFI_STATUS status = raw::SystemTable->BootServices->AllocatePool(
         EFI_MEMORY_TYPE::EfiLoaderData,
-        bytes,
+        total,
         &ptr
     );
 
@@ -17,12 +20,20 @@ void* alloc(UINTN bytes) noexcept{
         mem_error = "UEFI AllocatePool Failed";
         return nullptr;
     }
-    return ptr;
+
+    uintptr_t raw = (uintptr_t)ptr;
+    uintptr_t offset = raw + sizeof(void*);
+    uintptr_t aligned = (offset + alignment - 1) & ~(alignment - 1);
+
+    ((void**)aligned)[-1] = ptr;
+
+    return (void*)aligned;
 }
 
 void free(void* ptr) noexcept{
     if(ptr){
-        raw::SystemTable->BootServices->FreePool(ptr);
+        void* rptr = ((void**)ptr)[-1];
+        raw::SystemTable->BootServices->FreePool(rptr);
     }
 }
 

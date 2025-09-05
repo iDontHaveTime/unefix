@@ -24,6 +24,9 @@ namespace uefi{
         virtual EFIAPI ~uefistream() noexcept = default;
         virtual EFIAPI void flush() = 0;
 
+        uefistream(const uefistream&) = delete;
+        uefistream& operator=(const uefistream&) = delete;
+
         EFIAPI uefistream& operator<<(const char* str){
             write(str, str::strlen(str));
             return *this;
