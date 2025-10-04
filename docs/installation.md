@@ -68,3 +68,10 @@ The `-m 512M` flag just means memory, aka how much RAM it can use.
 ## Done
 
 That's it, it should boot into QEMU (or hardware) with no problem whatsoever, which it did on my machine at least.
+
+## Next
+
+For the next part you can check out these:
+- **[Introduction](introduction.md)** - learn about why does unefix exist, and roughly how it works.
+- **[Core Concepts](usage.md)** - learn about streams, memory, files, graphics, and the entry point.
+- **[Examples](examples.md)** - copy-pasteable snippets to see unefix in action.

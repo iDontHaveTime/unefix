@@ -15,8 +15,12 @@ extern EFI_HANDLE ImageHandle;
 extern EFI_SYSTEM_TABLE* SystemTable;
 extern EFI_GRAPHICS_OUTPUT_PROTOCOL* gop;
 extern system::ExitType default_shutdown;
+/* Simple file system handles. */
 extern EFI_HANDLE* fsHandles;
 extern UINTN fsHandleCount;
+/* Block IO handles. */
+extern EFI_HANDLE* blkHandles;
+extern UINTN blkHandleCount;
 
 }
 }

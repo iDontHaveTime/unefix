@@ -1,4 +1,5 @@
 #include "unstdx/raw/trampoline.hpp"
+#include "defs/efiblockio.hpp"
 #include "defs/efiboot.hpp"
 #include "defs/efifs.hpp"
 #include "defs/efigrph.hpp"
@@ -76,6 +77,9 @@ system::ExitType default_shutdown = system::ExitType::Shutdown;
 EFI_HANDLE* fsHandles = nullptr;
 UINTN fsHandleCount = 0;
 
+EFI_HANDLE* blkHandles = nullptr;
+UINTN blkHandleCount = 0;
+
 }
 }
 
@@ -152,6 +156,14 @@ inline void init_basics() noexcept{
         nullptr,
         &uefi::raw::fsHandleCount,
         &uefi::raw::fsHandles
+    );
+    guid = EFI_BLOCK_IO_PROTOCOL_GUID;
+    uefi::raw::SystemTable->BootServices->LocateHandleBuffer(
+        EFI_LOCATE_SEARCH_TYPE::ByProtocol,
+        &guid,
+        nullptr,
+        &uefi::raw::blkHandleCount,
+        &uefi::raw::blkHandles
     );
 }
 
